@@ -413,10 +413,9 @@ struct fastrpc_mmap {
 	int refs;
 	uintptr_t raddr;
 	int uncached;
+	bool is_filemap; /* flag to indicate map used in process init */
 	int secure;
 	uintptr_t attr;
-	bool is_filemap;
-	/* flag to indicate map used in process init */
 };
 
 enum fastrpc_perfkeys {
@@ -841,7 +840,7 @@ static int fastrpc_mmap_remove(struct fastrpc_file *fl, uintptr_t va,
 	hlist_for_each_entry_safe(map, n, &me->maps, hn) {
 		if (map->refs == 1 && map->raddr == va &&
 			map->raddr + map->len == va + len &&
-			/* Remove map if not used in process initialization*/
+			/* Remove map if not used in process initialization */
 			!map->is_filemap) {
 			match = map;
 			hlist_del_init(&map->hn);
@@ -856,7 +855,7 @@ static int fastrpc_mmap_remove(struct fastrpc_file *fl, uintptr_t va,
 	hlist_for_each_entry_safe(map, n, &fl->maps, hn) {
 		if (map->refs == 1 && map->raddr == va &&
 			map->raddr + map->len == va + len &&
-			/* Remove map if not used in process initialization*/
+			/* Remove map if not used in process initialization */
 			!map->is_filemap) {
 			match = map;
 			hlist_del_init(&map->hn);
@@ -992,6 +991,7 @@ static int fastrpc_mmap_create(struct fastrpc_file *fl, int fd,
 	map->refs = 1;
 	map->fl = fl;
 	map->fd = fd;
+	map->is_filemap = false;
 	map->attr = attr;
 	map->is_filemap = false;
 	if (mflags == ADSP_MMAP_HEAP_ADDR ||
@@ -2459,6 +2459,7 @@ static int fastrpc_internal_invoke(struct fastrpc_file *fl, uint32_t mode,
 		goto bail;
 
 	VERIFY(err, 0 == (err = ctx->retval));
+
 	if (err)
 		goto bail;
  bail:
@@ -2615,7 +2616,7 @@ static int fastrpc_init_process(struct fastrpc_file *fl,
 		VERIFY(err, !init->mem);
 		if (err) {
 			err = -EINVAL;
-			pr_err("adsprpc: %s: %s: ERROR: donated memory allocated in userspace\n",
+			pr_err("adsprpc: %s: %s: ERROR: donated memory allocated in userspace \n",
 				current->comm, __func__);
 			goto bail;
 		}
@@ -3340,18 +3341,20 @@ static int fastrpc_internal_munmap(struct fastrpc_file *fl,
 	mutex_unlock(&fl->map_mutex);
 	if (err)
 		goto bail;
-	VERIFY(err, map != NULL);
+  	VERIFY(err, map != NULL);
 	if (err) {
 		err = -EINVAL;
 		goto bail;
 	}
-	VERIFY(err, !fastrpc_munmap_on_dsp(fl, map->raddr,
-			map->phys, map->size, map->flags));
-	if (err)
-		goto bail;
-	mutex_lock(&fl->map_mutex);
-	fastrpc_mmap_free(map, 0);
-	mutex_unlock(&fl->map_mutex);
+	if (map) {
+		VERIFY(err, !fastrpc_munmap_on_dsp(fl, map->raddr,
+					map->phys, map->size, map->flags));
+		if (err)
+			goto bail;
+		mutex_lock(&fl->map_mutex);
+		fastrpc_mmap_free(map, 0);
+		mutex_unlock(&fl->map_mutex);
+	}
 bail:
 	if (err && map) {
 		mutex_lock(&fl->map_mutex);
@@ -4257,6 +4260,7 @@ static int fastrpc_internal_control(struct fastrpc_file *fl,
 		VERIFY(err, latency != 0);
 		if (err)
 			goto bail;
+		mutex_lock(&fl->pm_qos_mutex);
 		cpumask_clear(&mask);
 		for (i = 0; i < len; i++)
 			cpumask_set_cpu(me->silvercores.coreno[i], &mask);
