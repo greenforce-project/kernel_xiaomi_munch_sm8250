@@ -1036,6 +1036,7 @@ static int wsa883x_spkr_event(struct snd_soc_dapm_widget *w,
 		swr_slvdev_datapath_control(wsa883x->swr_slave,
 					    wsa883x->swr_slave->dev_num,
 					    true);
+<<<<<<< HEAD
 		/* Added delay as per HW sequence */
 		usleep_range(250, 300);
 		snd_soc_component_update_bits(component, WSA883X_DRE_CTL_1,
@@ -1052,6 +1053,11 @@ static int wsa883x_spkr_event(struct snd_soc_dapm_widget *w,
 		snd_soc_component_update_bits(component,
 				WSA883X_VBAT_ADC_FLT_CTL,
 				0x01, 0x01);
+=======
+		/* Force remove group */
+		swr_remove_from_group(wsa883x->swr_slave,
+				      wsa883x->swr_slave->dev_num);
+>>>>>>> a8dc07a513e00f4645131596de562cdb4efaf84f
 		if (test_bit(SPKR_ADIE_LB, &wsa883x->status_mask))
 			snd_soc_component_update_bits(component,
 				WSA883X_PA_FSM_CTL, 0x01, 0x01);
@@ -1060,6 +1066,7 @@ static int wsa883x_spkr_event(struct snd_soc_dapm_widget *w,
 		if (!test_bit(SPKR_ADIE_LB, &wsa883x->status_mask))
 			wcd_disable_irq(&wsa883x->irq_info,
 					WSA883X_IRQ_INT_PDM_WD);
+<<<<<<< HEAD
 		snd_soc_component_update_bits(component,
 				WSA883X_VBAT_ADC_FLT_CTL,
 				0x01, 0x00);
@@ -1077,6 +1084,13 @@ static int wsa883x_spkr_event(struct snd_soc_dapm_widget *w,
 		snd_soc_component_update_bits(wsa883x->component, WSA883X_PDM_WD_CTL,
 				0x01, 0x00);
 		wcd_disable_irq(&wsa883x->irq_info, WSA883X_IRQ_INT_PA_ON_ERR);
+=======
+		snd_soc_component_update_bits(component, WSA883X_PA_FSM_CTL,
+				0x01, 0x00);
+		snd_soc_component_update_bits(wsa883x->component,
+					WSA883X_PDM_WD_CTL,
+					0x01, 0x00);
+>>>>>>> a8dc07a513e00f4645131596de562cdb4efaf84f
 		clear_bit(SPKR_STATUS, &wsa883x->status_mask);
 		clear_bit(SPKR_ADIE_LB, &wsa883x->status_mask);
 		break;
@@ -1468,6 +1482,7 @@ static int wsa883x_event_notify(struct notifier_block *nb,
 						0x01, 0x01);
 			wcd_enable_irq(&wsa883x->irq_info,
 					WSA883X_IRQ_INT_PDM_WD);
+<<<<<<< HEAD
 			/* Added delay as per HW sequence */
 			usleep_range(3000, 3100);
 			snd_soc_component_update_bits(wsa883x->component,
@@ -1475,6 +1490,8 @@ static int wsa883x_event_notify(struct notifier_block *nb,
 						0x01, 0x00);
 			/* Added delay as per HW sequence */
 			usleep_range(5000, 5050);
+=======
+>>>>>>> a8dc07a513e00f4645131596de562cdb4efaf84f
 		}
 		break;
 	case BOLERO_WSA_EVT_PA_ON_POST_FSCLK_ADIE_LB:

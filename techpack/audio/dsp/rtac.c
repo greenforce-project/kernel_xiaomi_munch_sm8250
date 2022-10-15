@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
+<<<<<<< HEAD
  * Copyright (c) 2012-2021, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2012-2020, The Linux Foundation. All rights reserved.
+>>>>>>> a8dc07a513e00f4645131596de562cdb4efaf84f
  */
 
 #include <linux/fs.h>

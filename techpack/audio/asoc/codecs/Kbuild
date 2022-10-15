@@ -75,6 +75,17 @@ ifeq ($(KERNEL_BUILD), 0)
 		export
 		INCS    +=  -include $(AUDIO_ROOT)/config/sdm660autoconf.h
 	endif
+<<<<<<< HEAD
+=======
+endif
+
+ifeq ($(TARGET_PRODUCT), psyche)
+        CDEFINES += -DCONFIG_TARGET_PRODUCT_PSYCHE
+endif
+
+ifeq ($(TARGET_PRODUCT), munch)
+        CDEFINES += -DCONFIG_TARGET_PRODUCT_MUNCH
+>>>>>>> a8dc07a513e00f4645131596de562cdb4efaf84f
 endif
 
 # As per target team, build is done as follows:
@@ -231,6 +242,15 @@ ifeq ($(KERNEL_BUILD), 1)
 	obj-y	+= wcd937x/
 	obj-y	+= wcd938x/
 	obj-y	+= bolero/
+ifeq ($(TARGET_PRODUCT), $(filter $(TARGET_PRODUCT), enuma))
+	obj-y	+= cs35l41_k81/
+else ifeq ($(TARGET_PRODUCT), $(filter $(TARGET_PRODUCT), elish))
+	obj-y	+= cs35l41_k81/
+else ifeq ($(TARGET_PRODUCT), $(filter $(TARGET_PRODUCT), munch))
+	obj-y	+= tfa9874/
+else
+	obj-y	+= cs35l41/
+endif
 	obj-y	+= rouleur/
 	obj-y	+= wsa883x/
 	obj-y	+= sdm660_cdc/

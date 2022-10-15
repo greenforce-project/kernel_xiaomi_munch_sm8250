@@ -937,13 +937,17 @@ int32_t q6core_avcs_load_unload_modules(struct avcs_load_unload_modules_payload
 	size_t packet_size = 0,  payload_size = 0;
 	struct avcs_cmd_dynamic_modules *mod = NULL;
 	int num_modules;
+<<<<<<< HEAD
 	unsigned long timeout;
+=======
+>>>>>>> a8dc07a513e00f4645131596de562cdb4efaf84f
 
 	if (payload == NULL) {
 		pr_err("%s: payload is null\n", __func__);
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if ((q6core_lcl.avs_state != ADSP_MODULES_READY_AVS_STATE)
 		&& (preload_type == AVCS_LOAD_MODULES)) {
 		timeout = jiffies +
@@ -970,6 +974,8 @@ int32_t q6core_avcs_load_unload_modules(struct avcs_load_unload_modules_payload
 			pr_err("%s: all modules might be not loaded yet on ADSP\n",
 				__func__);
 	}
+=======
+>>>>>>> a8dc07a513e00f4645131596de562cdb4efaf84f
 	mutex_lock(&(q6core_lcl.cmd_lock));
 	num_modules = payload->num_modules;
 	ocm_core_open();
