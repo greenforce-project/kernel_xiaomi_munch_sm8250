@@ -344,17 +344,16 @@ static int cs35l41_ccm_reset_put(struct snd_kcontrol *kcontrol,
 	struct cs35l41_private *cs35l41 =
 		snd_soc_component_get_drvdata(component);
 	unsigned int val = 0;
-	int ret = 0;
 
 	val = ucontrol->value.integer.value[0];
 
 	if (val) {
-		ret = regmap_update_bits(cs35l41->regmap, CS35L41_DSP_CLK_CTRL,
+		regmap_update_bits(cs35l41->regmap, CS35L41_DSP_CLK_CTRL,
 			0x3, 0x2);
-		ret = regmap_update_bits(cs35l41->regmap,
+		regmap_update_bits(cs35l41->regmap,
 			CS35L41_DSP1_CCM_CORE_CTRL,
 			CS35L41_HALO_CORE_RESET, CS35L41_HALO_CORE_RESET);
-		ret = regmap_update_bits(cs35l41->regmap, CS35L41_DSP_CLK_CTRL,
+		regmap_update_bits(cs35l41->regmap, CS35L41_DSP_CLK_CTRL,
 			0x3, 0x3);
 	}
 
